@@ -11,6 +11,7 @@
     <h2 class="page_header" style="text-align: center;">Products</h2>
     <div class="container">
         <button type="button" id="" class="btn btn-success" data-toggle="modal" data-target="#myModal">Add product</button>
+        <input type="text" class="product_list_search" id="search_for_product" placeholder="Search...">
         @if (count($products) > 0)
             <table class="table table-striped">
                 <thead>
@@ -23,7 +24,7 @@
                 </thead>
                 <tbody>
                     @foreach ($products as $key => $product)
-                        <tr>
+                        <tr class="product_data">
                             <td>{{$product->name}}</td>
                             <td>{{$product->description}}</td>
                             <td>{{$product->price}}</td>
@@ -133,6 +134,46 @@
                         }, 1000);
                     },
                 });
+            }
+        }
+
+        (function($) {
+            $.fn.donetyping = function(callback){
+            var _this = $(this);
+            var x_timer;    
+            _this.keyup(function (){
+                clearTimeout(x_timer);
+                x_timer = setTimeout(clear_timer, 1000);
+            }); 
+
+            function clear_timer(){
+                clearTimeout(x_timer);
+                callback.call(_this);
+            }
+            }
+        })(jQuery);
+
+        $('#search_for_product').donetyping(function(callback){
+            searchUsers();
+        });
+
+        jQuery.expr[":"].Contains = jQuery.expr.createPseudo(function(arg) {
+            return function( elem ) {
+                return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+            };
+        });
+
+        function searchUsers() {
+            var search_content = $("#search_for_product").val();
+            if (search_content.length > 0) {
+                $('.product_data').hide();
+                $('.product_data:Contains("'+search_content+'")').show();
+            }
+            else if (!search_content) {
+                $(".product_data").show();
+            }
+            else {
+                // do nothing
             }
         }
 
